@@ -1,51 +1,49 @@
-
 import tkinter as tk
 import sys
+import subprocess
+import threading 
+import time
+# --- functions ---
 
-class App:
-    def __init__(self, master):
-        self.master = master
-        self.label1 = tk.Label(self.master, text="Input 1")
-        self.label1.pack()
-        self.entry1 = tk.Entry(self.master)
-        self.entry1.pack()
+def run():
+    threading.Thread(target=test).start()
 
-        self.label2 = tk.Label(self.master, text="Input 2")
-        self.label2.pack()
-        self.entry2 = tk.Entry(self.master)
-        self.entry2.pack()
+def test():
+    print("Hello World")
+    time.sleep(1)
+    print("Hello World")
+    
 
-        self.button = tk.Button(self.master, text="Run Script", command=self.get_inputs)
-        self.button.pack()
 
-        self.text = tk.Text(self.master)
-        self.text.pack()
+    print("Finished")
+             
+# --- classes ---
 
-    def run_script(self, input1, input2):
-        # your script code here
-        output = f"Input 1: {input1}\nInput 2: {input2}"
-        print("TESTING")
-        return output
+class Redirect():
 
-    def get_inputs(self):
-        input1 = self.entry1.get()
-        input2 = self.entry2.get()
-        
-        # redirect stdout to text widget
-        sys.stdout = TextRedirector(self.text)
-
-        output = self.run_script(input1, input2)
-
-    # restore stdout when done
-    sys.stdout = sys.__stdout__
-
-class TextRedirector:
     def __init__(self, widget):
         self.widget = widget
 
-    def write(self, string):
-        self.widget.insert(tk.END, string)
+    def write(self, text):
+        self.widget.insert('end', text)
+        #self.widget.see('end') # autoscroll
+
+    #def flush(self):
+    #    pass
+
+# --- main ---    
 
 root = tk.Tk()
-app = App(root)
+
+text = tk.Text(root)
+text.pack()
+
+button = tk.Button(root, text='TEST', command=run)
+button.pack()
+
+old_stdout = sys.stdout    
+sys.stdout = Redirect(text)
+
 root.mainloop()
+
+sys.stdout = old_stdout
